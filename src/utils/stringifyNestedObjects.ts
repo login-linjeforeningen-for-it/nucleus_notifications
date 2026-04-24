@@ -18,4 +18,6 @@ export default function handleNestedObjects(data: { [key: string]: any } | undef
             }
         }
     }
+
+    return data
 }

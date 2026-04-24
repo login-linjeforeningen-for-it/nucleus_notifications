@@ -1,11 +1,5 @@
-import admin from 'firebase-admin'
-import { type Message, getMessaging } from "firebase-admin/messaging"
 import handleNestedObjects from "./stringifyNestedObjects.ts"
 import config from '#config'
-
-admin.initializeApp({
-    credential: admin.credential.cert(config.service_account)
-})
 
 type sendNotificationProps = {
     title: string
@@ -23,31 +17,30 @@ type sendNotificationProps = {
  */
 export default async function sendNotification({ title, body, screen, topic }: sendNotificationProps): Promise<void> {
     try {
-        // Sets the topic to maintenance if the topic is not available
         if (!topic || !stable) {
             topic = "maintenance"
         }
 
-        const data: any = handleNestedObjects(screen)
-
-        // Defines the message to be sent
-        const message: Message = {
-            topic: topic,
-            notification: {
-                title: title,
-                body: body,
+        const data = handleNestedObjects(screen) || {}
+        const response = await fetch(`${config.app_api}/notifications`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                ...(config.admin_token ? { Authorization: `Bearer ${config.admin_token}` } : {})
             },
-            data: data
+            body: JSON.stringify({
+                title,
+                body,
+                topic,
+                data,
+            })
+        })
+
+        if (!response.ok) {
+            throw new Error(await response.text())
         }
 
-        const response = await getMessaging().send(message)
-
-        if (typeof response != 'string') {
-            throw new Error("Error sending notification: Unexpected response from FCM.")
-        }
-
-        // Logs the response with the ID of the notification that was sent
-        console.log(`Sent notification "${title}" with body "${body}" to topic "${topic}" at ${new Date().toISOString()}: ${response}`)
+        console.log(`Sent notification "${title}" with body "${body}" to topic "${topic}" at ${new Date().toISOString()}.`)
     } catch (error) {
         console.error(`Error sending notification "${title}" with body "${body}"${screen ? ` to screen "${screen}"` : ''} to topic "${topic}". The following error occured: `, error)
     }
