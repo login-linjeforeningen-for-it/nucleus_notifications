@@ -1,6 +1,6 @@
 {
     "name": "nucleus_notifications",
-    "version": "3.0.1",
+    "version": "3.0.2",
     "description": "Automated notifications for the Login app",
     "main": "index.ts",
     "author": "Login - Linjeforeningen for IT",
@@ -10,7 +10,7 @@
         "dev": "bun src/index.ts",
         "slow": "bun src/slowMonitored.ts",
         "test": "bun src/test.ts",
-        "notify": "bun src/functions/sendNotification.ts",
+        "notify": "bun src/utils/sendNotification.ts",
         "start": "bun src/index.ts"
     },
     "dependencies": {
