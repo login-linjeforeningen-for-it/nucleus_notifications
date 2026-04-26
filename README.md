@@ -18,7 +18,9 @@ the service is still marked as unstable.
 Local tests run that stability path once in dry-run mode. Set
 `NUCLEUS_NOTIFICATIONS_DRY_RUN=1` manually when validating behavior without
 posting to App API. Set `NUCLEUS_NOTIFICATIONS_DATA_DIR` to redirect the JSON
-state files into a disposable directory during tests.
+state files into a disposable directory during tests. JSON state writes are
+flushed synchronously so the stability gate does not complete before state is
+actually on disk.
 
 ## How to set in production
 1. Verify that the service runs correctly locally using `npm run test`

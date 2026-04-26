@@ -78,16 +78,12 @@ export function writeFile({fileName, content, removeBrackets}: writeFileProps) {
         stringifiedContent = content
     }
 
-    // Writes content or empty brackets to file 
-    fs.writeFile(File, stringifiedContent, (error) => {
-        // Returns and handles any errors while writing
-        if (error) {
-            return handleError({file: "writeFile", error: JSON.stringify(error)})
-        }
-
-        // Logs success
+    try {
+        fs.writeFileSync(File, stringifiedContent)
         console.log(`Overwrote ${fileName}. Content: ${content ? true : false}.`)
-    })
+    } catch (error) {
+        handleError({file: "writeFile", error: JSON.stringify(error)})
+    }
 }
 
 /**
